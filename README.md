@@ -1,5 +1,11 @@
-F1 Driver & Contract Management System
-Program manajemen data Formula 1 berbasis C++ menggunakan konsep:
+# 🏎️ F1 Driver & Contract Management System
+
+Program manajemen data Formula 1 berbasis C++.
+
+---
+
+## 📌 Konsep yang Digunakan
+
 - Struct
 - Array
 - Function
@@ -8,12 +14,19 @@ Program manajemen data Formula 1 berbasis C++ menggunakan konsep:
 - Login Multi User
 - CRUD Data
 
-📌 Fitur Program
-1. 👨‍💼 Admin
-Data Login:
-Username:admin
-Password:123
-Admin dapat:
+---
+
+# 📍 Fitur Program
+
+## 👨‍💼 Admin
+
+### 🔐 Login Admin
+```txt
+Username : admin
+Password : 123
+```
+
+### Admin dapat:
 - Login admin
 - Menambah data pembalap
 - Melihat data pembalap
@@ -25,9 +38,11 @@ Admin dapat:
 - Hapus kontrak
 - Search data pembalap
 
-2. 👤 User
+---
 
-User dapat:
+## 👤 User
+
+### User dapat:
 - Register akun
 - Login akun
 - Melihat data driver
@@ -42,17 +57,21 @@ User dapat:
 - Melihat profil akun
 - Menghapus akun
 
-🏎️ Data Default Formula 1
-Program sudah memiliki data default:
+---
+
+# 🏁 Data Default F1
+
+Program memiliki data default:
 - Ferrari
 - McLaren
-- Mercedes
 - Red Bull Racing
+- Mercedes
 - Aston Martin
 - Alpine
 - Haas
 - Williams
-- Racing Bulls
 - Cadillac
+- Racing Bulls
 - Audi (Sauber)
-Beserta data pembalap Formula 1 terbaru.
+
+Beserta pembalap Formula 1 terbaru.
