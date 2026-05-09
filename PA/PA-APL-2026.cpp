@@ -58,6 +58,37 @@ void validasiAngka(int &x){
     }
 }
 
+string ubahKeLower(string teks){
+    transform(teks.begin(), teks.end(), teks.begin(), ::tolower);
+    return teks;
+}
+
+int cariIndexPembalapById(int id){
+    for(int i = 0; i < jmlP; i++){
+        if(p[i].id == id){
+            return i;
+        }
+    }
+    return -1;
+}
+
+int cariIndexKontrakById(int idKontrak){
+    for(int i = 0; i < jmlK; i++){
+        if(k[i].idKontrak == idKontrak){
+            return i;
+        }
+    }
+    return -1;
+}
+
+bool validasiTahun4Digit(int tahun){
+    return tahun >= 1000 && tahun <= 9999;
+}
+
+bool validasiNilaiMinimal6Digit(int nilai){
+    return nilai >= 100000;
+}
+
 void menuLogin(){
     header("MENU LOGIN");
     cout << "1. Login Admin\n";
@@ -84,13 +115,14 @@ void menuAdmin(){
     header("MENU ADMIN");
     cout << "1. Tambah Pembalap\n";
     cout << "2. Lihat Pembalap\n";
-    cout << "3. Lihat Kontrak\n";
-    cout << "4. Hapus Pembalap\n";
-    cout << "5. Hapus Kontrak\n";
-    cout << "6. Tambah Kontrak\n";
-    cout << "7. Edit Kontrak\n";
-    cout << "8. Search Data\n";
-    cout << "9. Keluar\n";
+    cout << "3. Edit Pembalap\n";
+    cout << "4. Lihat Kontrak\n";
+    cout << "5. Hapus Pembalap\n";
+    cout << "6. Hapus Kontrak\n";
+    cout << "7. Tambah Kontrak\n";
+    cout << "8. Edit Kontrak\n";
+    cout << "9. Search Data\n";
+    cout << "10. Keluar\n";
     garis();
     cout << "Pilih: ";
 }
@@ -100,7 +132,9 @@ void menuUser(){
     cout << "1. Menu Driver\n";
     cout << "2. Menu Team\n";
     cout << "3. Menu Profil\n";
-    cout << "4. Keluar\n";
+    cout << "4. Search Data\n";
+    cout << "5. Lihat Kontrak Driver\n";
+    cout << "6. Keluar\n";
     garis();
     cout << "Pilih: ";
 }
@@ -139,52 +173,35 @@ void menuProfilUI(){
     cout << "Pilih: ";
 }
 
-void menuSort(){
+void menuSortPembalap(){
     header("LIHAT PEMBALAP");
-    cout << "1. Ascending\n";
-    cout << "2. Descending\n";
+    cout << "1. ID Pembalap Ascending\n";
+    cout << "2. ID Pembalap Descending\n";
+    cout << "3. Nama Pembalap Ascending\n";
+    cout << "4. Nama Pembalap Descending\n";
     garis();
     cout << "Pilih: ";
 }
 
-int cariIndexPembalapById(int id){
-    for(int i = 0; i < jmlP; i++){
-        if(p[i].id == id){
-            return i;
-        }
-    }
-    return -1;
+void menuSortKontrak(){
+    header("LIHAT KONTRAK");
+    cout << "1. ID Kontrak Ascending\n";
+    cout << "2. ID Kontrak Descending\n";
+    cout << "3. Nama Driver Ascending\n";
+    cout << "4. Nama Driver Descending\n";
+    cout << "5. Tahun Ascending\n";
+    cout << "6. Tahun Descending\n";
+    garis();
+    cout << "Pilih: ";
 }
 
-void tambahPembalap(){
-    try{
-        if(jmlP >= MAX) throw "Data penuh!";
-
-        header("TAMBAH PEMBALAP");
-
-        cout << "ID: ";
-        validasiAngka(p[jmlP].id);
-
-        if(cariIndexPembalapById(p[jmlP].id) != -1){
-            throw "ID pembalap sudah digunakan!";
-        }
-
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
-
-        cout << "Nama: ";
-        getline(cin, p[jmlP].nama);
-        if(p[jmlP].nama.empty()) throw "Nama kosong!";
-
-        cout << "Tim: ";
-        getline(cin, p[jmlP].tim);
-        if(p[jmlP].tim.empty()) throw "Tim kosong!";
-
-        jmlP++;
-        cout << GREEN << "Berhasil menambahkan pembalap\n" << RESET;
-
-    }catch(const char* e){
-        cout << RED << "Error: " << e << RESET << endl;
-    }
+void menuSearchUI(){
+    header("MENU SEARCH");
+    cout << "1. Pembalap\n";
+    cout << "2. Kontrak\n";
+    cout << "3. Kembali\n";
+    garis();
+    cout << "Pilih: ";
 }
 
 void tampilPembalap(){
@@ -257,7 +274,105 @@ void tampilTeamFavorit(){
     }
 }
 
-void sortAsc(){
+void tambahPembalap(){
+    try{
+        if(jmlP >= MAX) throw "Data penuh!";
+
+        header("TAMBAH PEMBALAP");
+
+        cout << "ID: ";
+        validasiAngka(p[jmlP].id);
+
+        if(cariIndexPembalapById(p[jmlP].id) != -1){
+            throw "ID pembalap sudah digunakan! ID harus unik.";
+        }
+
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+        cout << "Nama: ";
+        getline(cin, p[jmlP].nama);
+
+        if(p[jmlP].nama.empty()){
+            throw "Nama kosong!";
+        }
+
+        cout << "Tim: ";
+        getline(cin, p[jmlP].tim);
+
+        if(p[jmlP].tim.empty()){
+            throw "Tim kosong!";
+        }
+
+        jmlP++;
+        cout << GREEN << "Pembalap berhasil ditambahkan\n" << RESET;
+
+    }catch(const char* e){
+        cout << RED << "Error: " << e << RESET << endl;
+    }
+}
+
+void editPembalap(){
+    try{
+        if(jmlP == 0) throw "Data pembalap kosong!";
+
+        tampilPembalap();
+
+        header("EDIT PEMBALAP");
+
+        int id;
+        cout << "Masukkan ID Driver yang ingin diedit: ";
+        validasiAngka(id);
+
+        int idx = cariIndexPembalapById(id);
+
+        if(idx == -1){
+            throw "ID driver tidak ditemukan!";
+        }
+
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+        cout << "Nama baru: ";
+        getline(cin, p[idx].nama);
+
+        if(p[idx].nama.empty()){
+            throw "Nama tidak boleh kosong!";
+        }
+
+        cout << "Tim baru: ";
+        getline(cin, p[idx].tim);
+
+        if(p[idx].tim.empty()){
+            throw "Tim tidak boleh kosong!";
+        }
+
+        cout << GREEN << "Data pembalap berhasil diedit\n" << RESET;
+
+    }catch(const char* e){
+        cout << RED << "Error: " << e << RESET << endl;
+    }
+}
+
+void sortPembalapIdAsc(){
+    for(int i = 0; i < jmlP - 1; i++){
+        for(int j = 0; j < jmlP - i - 1; j++){
+            if(p[j].id > p[j + 1].id){
+                swap(p[j], p[j + 1]);
+            }
+        }
+    }
+}
+
+void sortPembalapIdDesc(){
+    for(int i = 0; i < jmlP - 1; i++){
+        for(int j = 0; j < jmlP - i - 1; j++){
+            if(p[j].id < p[j + 1].id){
+                swap(p[j], p[j + 1]);
+            }
+        }
+    }
+}
+
+void sortPembalapNamaAsc(){
     for(int i = 0; i < jmlP - 1; i++){
         for(int j = 0; j < jmlP - i - 1; j++){
             if(p[j].nama > p[j + 1].nama){
@@ -267,7 +382,7 @@ void sortAsc(){
     }
 }
 
-void sortDesc(){
+void sortPembalapNamaDesc(){
     for(int i = 0; i < jmlP - 1; i++){
         for(int j = 0; j < jmlP - i - 1; j++){
             if(p[j].nama < p[j + 1].nama){
@@ -277,59 +392,153 @@ void sortDesc(){
     }
 }
 
-void hapusPembalap(){
+void lihatPembalapDenganSort(){
     try{
-        if(jmlP == 0) throw "Data pembalap kosong!";
-
-        header("HAPUS PEMBALAP");
-
-        int id;
-        cout << "ID: ";
-        validasiAngka(id);
-
-        for(int i = 0; i < jmlP; i++){
-            if(p[i].id == id){
-                for(int j = i; j < jmlP - 1; j++){
-                    p[j] = p[j + 1];
-                }
-
-                jmlP--;
-                cout << GREEN << "Pembalap berhasil dihapus\n" << RESET;
-                return;
-            }
+        if(jmlP == 0){
+            tampilPembalap();
+            return;
         }
 
-        throw "ID tidak ditemukan!";
+        int s;
+
+        menuSortPembalap();
+        validasiAngka(s);
+
+        if(s == 1){
+            sortPembalapIdAsc();
+        }
+        else if(s == 2){
+            sortPembalapIdDesc();
+        }
+        else if(s == 3){
+            sortPembalapNamaAsc();
+        }
+        else if(s == 4){
+            sortPembalapNamaDesc();
+        }
+        else{
+            throw "Pilihan salah!";
+        }
+
+        tampilPembalap();
 
     }catch(const char* e){
         cout << RED << "Error: " << e << RESET << endl;
     }
 }
 
-void tambahKontrak(){
+void sortKontrakIdAsc(){
+    for(int i = 0; i < jmlK - 1; i++){
+        for(int j = 0; j < jmlK - i - 1; j++){
+            if(k[j].idKontrak > k[j + 1].idKontrak){
+                swap(k[j], k[j + 1]);
+            }
+        }
+    }
+}
+
+void sortKontrakIdDesc(){
+    for(int i = 0; i < jmlK - 1; i++){
+        for(int j = 0; j < jmlK - i - 1; j++){
+            if(k[j].idKontrak < k[j + 1].idKontrak){
+                swap(k[j], k[j + 1]);
+            }
+        }
+    }
+}
+
+void sortKontrakNamaAsc(){
+    for(int i = 0; i < jmlK - 1; i++){
+        for(int j = 0; j < jmlK - i - 1; j++){
+            int idx1 = cariIndexPembalapById(k[j].idPembalap);
+            int idx2 = cariIndexPembalapById(k[j + 1].idPembalap);
+
+            string nama1 = "-";
+            string nama2 = "-";
+
+            if(idx1 != -1){
+                nama1 = p[idx1].nama;
+            }
+
+            if(idx2 != -1){
+                nama2 = p[idx2].nama;
+            }
+
+            if(nama1 > nama2){
+                swap(k[j], k[j + 1]);
+            }
+        }
+    }
+}
+
+void sortKontrakNamaDesc(){
+    for(int i = 0; i < jmlK - 1; i++){
+        for(int j = 0; j < jmlK - i - 1; j++){
+            int idx1 = cariIndexPembalapById(k[j].idPembalap);
+            int idx2 = cariIndexPembalapById(k[j + 1].idPembalap);
+
+            string nama1 = "-";
+            string nama2 = "-";
+
+            if(idx1 != -1){
+                nama1 = p[idx1].nama;
+            }
+
+            if(idx2 != -1){
+                nama2 = p[idx2].nama;
+            }
+
+            if(nama1 < nama2){
+                swap(k[j], k[j + 1]);
+            }
+        }
+    }
+}
+
+void sortKontrakTahunAsc(){
+    for(int i = 0; i < jmlK - 1; i++){
+        for(int j = 0; j < jmlK - i - 1; j++){
+            if(k[j].tahun > k[j + 1].tahun){
+                swap(k[j], k[j + 1]);
+            }
+        }
+    }
+}
+
+void sortKontrakTahunDesc(){
+    for(int i = 0; i < jmlK - 1; i++){
+        for(int j = 0; j < jmlK - i - 1; j++){
+            if(k[j].tahun < k[j + 1].tahun){
+                swap(k[j], k[j + 1]);
+            }
+        }
+    }
+}
+
+void hapusPembalap(){
     try{
-        if(jmlK >= MAX) throw "Data penuh!";
+        if(jmlP == 0) throw "Data pembalap kosong!";
 
-        header("TAMBAH KONTRAK");
+        tampilPembalap();
 
-        cout << "ID Kontrak: ";
-        validasiAngka(k[jmlK].idKontrak);
+        header("HAPUS PEMBALAP");
 
-        cout << "ID Pembalap: ";
-        validasiAngka(k[jmlK].idPembalap);
+        int id;
+        cout << "Masukkan ID Driver yang ingin dihapus: ";
+        validasiAngka(id);
 
-        if(cariIndexPembalapById(k[jmlK].idPembalap) == -1){
-            throw "ID pembalap tidak ditemukan!";
+        int idx = cariIndexPembalapById(id);
+
+        if(idx == -1){
+            throw "ID driver tidak ditemukan!";
         }
 
-        cout << "Tahun: ";
-        validasiAngka(k[jmlK].tahun);
+        for(int i = idx; i < jmlP - 1; i++){
+            p[i] = p[i + 1];
+        }
 
-        cout << "Nilai: ";
-        validasiAngka(k[jmlK].nilai);
-
-        jmlK++;
-        cout << GREEN << "Kontrak berhasil ditambahkan\n" << RESET;
+        jmlP--;
+        cout << GREEN << "Pembalap berhasil dihapus\n" << RESET;
 
     }catch(const char* e){
         cout << RED << "Error: " << e << RESET << endl;
@@ -347,9 +556,9 @@ void tampilKontrak(){
     cout << left
          << setw(12) << "ID Kontrak"
          << setw(12) << "ID Driver"
-         << setw(20) << "Nama Driver"
+         << setw(25) << "Nama Driver"
          << setw(10) << "Tahun"
-         << setw(15) << "Nilai" << endl;
+         << setw(15) << "Nilai Gaji" << endl;
 
     garis();
 
@@ -364,10 +573,95 @@ void tampilKontrak(){
         cout << left
              << setw(12) << k[i].idKontrak
              << setw(12) << k[i].idPembalap
-             << setw(20) << namaDriver
+             << setw(25) << namaDriver
              << setw(10) << k[i].tahun
              << setw(15) << k[i].nilai
              << endl;
+    }
+}
+
+void lihatKontrakDenganSort(){
+    try{
+        if(jmlK == 0){
+            tampilKontrak();
+            return;
+        }
+
+        int s;
+
+        menuSortKontrak();
+        validasiAngka(s);
+
+        if(s == 1){
+            sortKontrakIdAsc();
+        }
+        else if(s == 2){
+            sortKontrakIdDesc();
+        }
+        else if(s == 3){
+            sortKontrakNamaAsc();
+        }
+        else if(s == 4){
+            sortKontrakNamaDesc();
+        }
+        else if(s == 5){
+            sortKontrakTahunAsc();
+        }
+        else if(s == 6){
+            sortKontrakTahunDesc();
+        }
+        else{
+            throw "Pilihan salah!";
+        }
+
+        tampilKontrak();
+
+    }catch(const char* e){
+        cout << RED << "Error: " << e << RESET << endl;
+    }
+}
+
+void tambahKontrak(){
+    try{
+        if(jmlK >= MAX) throw "Data penuh!";
+
+        header("TAMBAH KONTRAK");
+
+        cout << "ID Kontrak: ";
+        validasiAngka(k[jmlK].idKontrak);
+
+        if(cariIndexKontrakById(k[jmlK].idKontrak) != -1){
+            throw "ID kontrak sudah digunakan! ID kontrak harus unik.";
+        }
+
+        tampilPembalap();
+
+        cout << "ID Pembalap: ";
+        validasiAngka(k[jmlK].idPembalap);
+
+        if(cariIndexPembalapById(k[jmlK].idPembalap) == -1){
+            throw "ID pembalap tidak ditemukan!";
+        }
+
+        cout << "Tahun: ";
+        validasiAngka(k[jmlK].tahun);
+
+        if(!validasiTahun4Digit(k[jmlK].tahun)){
+            throw "Tahun kontrak wajib 4 digit!";
+        }
+
+        cout << "Nilai Gaji: ";
+        validasiAngka(k[jmlK].nilai);
+
+        if(!validasiNilaiMinimal6Digit(k[jmlK].nilai)){
+            throw "Nilai gaji wajib minimal 6 digit!";
+        }
+
+        jmlK++;
+        cout << GREEN << "Kontrak berhasil ditambahkan\n" << RESET;
+
+    }catch(const char* e){
+        cout << RED << "Error: " << e << RESET << endl;
     }
 }
 
@@ -375,25 +669,26 @@ void hapusKontrak(){
     try{
         if(jmlK == 0) throw "Data kontrak kosong!";
 
+        tampilKontrak();
+
         header("HAPUS KONTRAK");
 
         int id;
-        cout << "ID Kontrak: ";
+        cout << "Masukkan ID Kontrak yang ingin dihapus: ";
         validasiAngka(id);
 
-        for(int i = 0; i < jmlK; i++){
-            if(k[i].idKontrak == id){
-                for(int j = i; j < jmlK - 1; j++){
-                    k[j] = k[j + 1];
-                }
+        int idx = cariIndexKontrakById(id);
 
-                jmlK--;
-                cout << GREEN << "Kontrak berhasil dihapus\n" << RESET;
-                return;
-            }
+        if(idx == -1){
+            throw "ID kontrak tidak ditemukan!";
         }
 
-        throw "ID tidak ditemukan!";
+        for(int i = idx; i < jmlK - 1; i++){
+            k[i] = k[i + 1];
+        }
+
+        jmlK--;
+        cout << GREEN << "Kontrak berhasil dihapus\n" << RESET;
 
     }catch(const char* e){
         cout << RED << "Error: " << e << RESET << endl;
@@ -404,34 +699,43 @@ void editKontrak(){
     try{
         if(jmlK == 0) throw "Data kontrak kosong!";
 
+        tampilKontrak();
+
         header("EDIT KONTRAK");
 
         int id;
-        cout << "ID Kontrak: ";
+        cout << "Masukkan ID Kontrak yang ingin diedit: ";
         validasiAngka(id);
 
-        for(int i = 0; i < jmlK; i++){
-            if(k[i].idKontrak == id){
-                cout << "Tahun baru: ";
-                validasiAngka(k[i].tahun);
+        int idx = cariIndexKontrakById(id);
 
-                cout << "Nilai baru: ";
-                validasiAngka(k[i].nilai);
-
-                cout << GREEN << "Kontrak berhasil diedit\n" << RESET;
-                return;
-            }
+        if(idx == -1){
+            throw "ID kontrak tidak ditemukan!";
         }
 
-        throw "ID tidak ditemukan!";
+        cout << "Tahun baru: ";
+        validasiAngka(k[idx].tahun);
+
+        if(!validasiTahun4Digit(k[idx].tahun)){
+            throw "Tahun kontrak wajib 4 digit!";
+        }
+
+        cout << "Nilai Gaji baru: ";
+        validasiAngka(k[idx].nilai);
+
+        if(!validasiNilaiMinimal6Digit(k[idx].nilai)){
+            throw "Nilai gaji wajib minimal 6 digit!";
+        }
+
+        cout << GREEN << "Kontrak berhasil diedit\n" << RESET;
 
     }catch(const char* e){
         cout << RED << "Error: " << e << RESET << endl;
     }
 }
 
-void searchData(){
-    header("SEARCH DATA");
+void searchPembalap(){
+    header("SEARCH PEMBALAP");
 
     if(jmlP == 0){
         cout << RED << "Data pembalap masih kosong\n" << RESET;
@@ -441,24 +745,135 @@ void searchData(){
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
     string cari;
-    cout << "Cari Nama: ";
+    cout << "Masukkan nama atau ID pembalap: ";
     getline(cin, cari);
 
+    if(cari.empty()){
+        cout << RED << "Keyword pencarian tidak boleh kosong\n" << RESET;
+        return;
+    }
+
+    string cariLower = ubahKeLower(cari);
     bool ketemu = false;
 
+    cout << left
+         << setw(5) << "ID"
+         << setw(30) << "Nama"
+         << setw(25) << "Team" << endl;
+
+    garis();
+
     for(int i = 0; i < jmlP; i++){
-        if(p[i].nama == cari){
-            cout << GREEN << "Ditemukan\n" << RESET;
-            cout << "ID   : " << p[i].id << endl;
-            cout << "Nama : " << p[i].nama << endl;
-            cout << "Team : " << p[i].tim << endl;
+        string namaLower = ubahKeLower(p[i].nama);
+        string idString = to_string(p[i].id);
+
+        if(namaLower.find(cariLower) != string::npos ||
+           idString.find(cari) != string::npos){
+
+            cout << left
+                 << setw(5) << p[i].id
+                 << setw(30) << p[i].nama
+                 << setw(25) << p[i].tim
+                 << endl;
+
             ketemu = true;
         }
     }
 
     if(!ketemu){
-        cout << RED << "Data tidak ditemukan\n" << RESET;
+        cout << RED << "Data pembalap tidak ditemukan\n" << RESET;
     }
+}
+
+void searchKontrak(){
+    header("SEARCH KONTRAK");
+
+    if(jmlK == 0){
+        cout << RED << "Data kontrak masih kosong\n" << RESET;
+        return;
+    }
+
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+    string cari;
+    cout << "Masukkan ID Kontrak / ID Driver / Nama Driver / Tahun: ";
+    getline(cin, cari);
+
+    if(cari.empty()){
+        cout << RED << "Keyword pencarian tidak boleh kosong\n" << RESET;
+        return;
+    }
+
+    string cariLower = ubahKeLower(cari);
+    bool ketemu = false;
+
+    cout << left
+         << setw(12) << "ID Kontrak"
+         << setw(12) << "ID Driver"
+         << setw(25) << "Nama Driver"
+         << setw(10) << "Tahun"
+         << setw(15) << "Nilai Gaji" << endl;
+
+    garis();
+
+    for(int i = 0; i < jmlK; i++){
+        int idx = cariIndexPembalapById(k[i].idPembalap);
+        string namaDriver = "-";
+
+        if(idx != -1){
+            namaDriver = p[idx].nama;
+        }
+
+        string namaLower = ubahKeLower(namaDriver);
+        string idKontrakStr = to_string(k[i].idKontrak);
+        string idDriverStr = to_string(k[i].idPembalap);
+        string tahunStr = to_string(k[i].tahun);
+
+        if(idKontrakStr.find(cari) != string::npos ||
+           idDriverStr.find(cari) != string::npos ||
+           tahunStr.find(cari) != string::npos ||
+           namaLower.find(cariLower) != string::npos){
+
+            cout << left
+                 << setw(12) << k[i].idKontrak
+                 << setw(12) << k[i].idPembalap
+                 << setw(25) << namaDriver
+                 << setw(10) << k[i].tahun
+                 << setw(15) << k[i].nilai
+                 << endl;
+
+            ketemu = true;
+        }
+    }
+
+    if(!ketemu){
+        cout << RED << "Data kontrak tidak ditemukan\n" << RESET;
+    }
+}
+
+void searchData(){
+    int pilih;
+
+    do{
+        try{
+            menuSearchUI();
+            validasiAngka(pilih);
+
+            if(pilih == 1){
+                searchPembalap();
+            }
+            else if(pilih == 2){
+                searchKontrak();
+            }
+            else if(pilih != 3){
+                throw "Menu search tidak tersedia!";
+            }
+
+        }catch(const char* e){
+            cout << RED << "Error: " << e << RESET << endl;
+        }
+
+    }while(pilih != 3);
 }
 
 void registerUser(){
@@ -551,7 +966,7 @@ void menuDriver(){
             validasiAngka(pilih);
 
             if(pilih == 1){
-                tampilPembalap();
+                lihatPembalapDenganSort();
             }
             else if(pilih == 2){
                 tampilDriverFavorit();
@@ -720,9 +1135,10 @@ void menuProfil(){
             }
             else if(pilih == 3){
                 header("DATA PROFIL");
-                cout << "Username    : " << users[userAktif].username << endl;
-                cout << "Fav Driver  : ";
 
+                cout << "Username    : " << users[userAktif].username << endl;
+
+                cout << "Fav Driver  : ";
                 if(users[userAktif].favDriver.empty()){
                     cout << "-\n";
                 }else{
@@ -730,7 +1146,6 @@ void menuProfil(){
                 }
 
                 cout << "Fav Team    : ";
-
                 if(users[userAktif].favTeam.empty()){
                     cout << "-\n";
                 }else{
@@ -779,19 +1194,41 @@ void dataDefault(){
     p[18] = {19, "Esteban Ocon", "Haas"};
     p[19] = {20, "Oliver Bearman", "Haas"};
 
-    p[20] = {21, "Liam Lawson", "Racing Bulls"};
+    p[20] = {21, "Liam Lawson", "Red Bull Racing"};
     p[21] = {22, "Arvid Lindblad", "Racing Bulls"};
 
     jmlP = 22;
 
-    k[0] = {101, 1, 2026, 50000000};
-    k[1] = {102, 5, 2028, 60000000};
-    k[2] = {103, 7, 2027, 45000000};
-    k[3] = {104, 3, 2026, 35000000};
-    k[4] = {105, 11, 2026, 30000000};
-    k[5] = {106, 15, 2027, 25000000};
+    k[0]  = {101, 5, 2028, 70000000};
+    k[1]  = {102, 1, 2026, 60000000};
+    k[2]  = {103, 2, 2029, 34000000};
+    k[3]  = {104, 7, 2026, 34000000};
+    k[4]  = {105, 3, 2027, 30000000};
 
-    jmlK = 6;
+    k[5]  = {106, 11, 2026, 20000000};
+    k[6]  = {107, 16, 2026, 13000000};
+    k[7]  = {108, 4, 2028, 13000000};
+
+    k[8]  = {109, 17, 2026, 12000000};
+    k[9]  = {110, 15, 2026, 12000000};
+    k[10] = {111, 12, 2026, 12000000};
+
+    k[11] = {112, 9, 2026, 8000000};
+    k[12] = {113, 13, 2026, 8000000};
+    k[13] = {114, 19, 2026, 8000000};
+
+    k[14] = {115, 10, 2026, 5000000};
+    k[15] = {116, 6, 2026, 5000000};
+
+    k[16] = {117, 14, 2026, 2000000};
+    k[17] = {118, 8, 2026, 2000000};
+
+    k[18] = {119, 20, 2026, 1000000};
+    k[19] = {120, 21, 2026, 1000000};
+    k[20] = {121, 18, 2026, 1000000};
+    k[21] = {122, 22, 2026, 500000};
+
+    jmlK = 22;
 }
 
 int main(){
@@ -830,42 +1267,30 @@ int main(){
                             tambahPembalap();
                         }
                         else if(m == 2){
-                            int s;
-
-                            menuSort();
-                            validasiAngka(s);
-
-                            if(s == 1){
-                                sortAsc();
-                            }
-                            else if(s == 2){
-                                sortDesc();
-                            }
-                            else{
-                                throw "Pilihan salah!";
-                            }
-
-                            tampilPembalap();
+                            lihatPembalapDenganSort();
                         }
                         else if(m == 3){
-                            tampilKontrak();
+                            editPembalap();
                         }
                         else if(m == 4){
-                            hapusPembalap();
+                            lihatKontrakDenganSort();
                         }
                         else if(m == 5){
-                            hapusKontrak();
+                            hapusPembalap();
                         }
                         else if(m == 6){
-                            tambahKontrak();
+                            hapusKontrak();
                         }
                         else if(m == 7){
-                            editKontrak();
+                            tambahKontrak();
                         }
                         else if(m == 8){
-                            searchData();
+                            editKontrak();
                         }
                         else if(m == 9){
+                            searchData();
+                        }
+                        else if(m == 10){
                             break;
                         }
                         else{
@@ -912,6 +1337,12 @@ int main(){
                                             }
                                         }
                                         else if(m == 4){
+                                            searchData();
+                                        }
+                                        else if(m == 5){
+                                            lihatKontrakDenganSort();
+                                        }
+                                        else if(m == 6){
                                             userAktif = -1;
                                             break;
                                         }
