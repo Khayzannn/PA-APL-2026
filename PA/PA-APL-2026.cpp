@@ -139,10 +139,15 @@ void menuProfilUI() {
 }
 
 void menuSort() {
-    header("LIHAT PEMBALAP");
-    cout << "1. Ascending\n";
-    cout << "2. Descending\n";
+
+    header("SORT PEMBALAP");
+
+    cout << "Pilih Sorting:\n";
+    cout << "1. ID\n";
+    cout << "2. Nama\n";
+
     garis();
+
     cout << "Pilih: ";
 }
 
@@ -236,6 +241,33 @@ void tampilPembalap() {
     }
 }
 
+void sortIdAsc() {
+
+    for(int i = 0; i < jmlP - 1; i++) {
+
+        for(int j = 0; j < jmlP - i - 1; j++) {
+
+            if(p[j].id > p[j + 1].id) {
+
+                swap(p[j], p[j + 1]);
+            }
+        }
+    }
+}
+
+void sortIdDesc() {
+
+    for(int i = 0; i < jmlP - 1; i++) {
+
+        for(int j = 0; j < jmlP - i - 1; j++) {
+
+            if(p[j].id < p[j + 1].id) {
+
+                swap(p[j], p[j + 1]);
+            }
+        }
+    }
+}
 void sortAsc() {
     for (int i = 0; i < jmlP - 1; i++)
         for (int j = 0; j < jmlP - i - 1; j++)
@@ -387,8 +419,14 @@ void editKontrak() {
         cout << RED << "Error: " << e << RESET << endl;
     }
 }
+string toLower(string teks){
 
+    transform(teks.begin(), teks.end(), teks.begin(), ::tolower);
+
+    return teks;
+}
 void searchData() {
+
     header("SEARCH DATA");
 
     if (jmlP == 0) {
@@ -396,19 +434,36 @@ void searchData() {
         return;
     }
 
-    cin.ignore(numeric_limits<streamsize>::max(), '\n');
     string cari;
+
     cout << "Cari Nama: ";
     getline(cin, cari);
 
+    cari = toLower(cari);
+
     bool ketemu = false;
+
     for (int i = 0; i < jmlP; i++) {
-        if (p[i].nama.find(cari) != string::npos) {
-            cout << "Ditemukan: " << p[i].nama << " - " << p[i].tim << endl;
+
+        string nama = toLower(p[i].nama);
+
+        if (nama.find(cari) != string::npos) {
+
+            cout << GREEN
+                 << "Ditemukan: "
+                 << p[i].nama
+                 << " - "
+                 << p[i].tim
+                 << RESET
+                 << endl;
+
             ketemu = true;
         }
     }
-    if (!ketemu) cout << RED << "Data tidak ditemukan\n" << RESET;
+
+    if (!ketemu) {
+        cout << RED << "Data tidak ditemukan\n" << RESET;
+    }
 }
 
 void registerUser() {
@@ -585,7 +640,6 @@ void menuProfil() {
         }
     } while (pilih != 4);
 }
-int inputMenu();
 int inputMenu(){
 
     string input;
@@ -646,15 +700,53 @@ int main() {
                         m = inputMenu();
 
                         if      (m == 1) tambahPembalap();
-                        else if (m == 2) {
-                            int s;
-                            menuSort();
-                            s = inputMenu();
-                            if      (s == 1) sortAsc();
-                            else if (s == 2) sortDesc();
-                            else throw "Pilihan salah!";
-                            tampilPembalap();
-                        }
+                       else if (m == 2) {
+
+    int pilihSort;
+
+    menuSort();
+    pilihSort = inputMenu();
+
+    int urutan;
+
+    garis();
+    cout << "1. Ascending\n";
+    cout << "2. Descending\n";
+    garis();
+    cout << "Pilih: ";
+
+    urutan = inputMenu();
+
+    if(pilihSort == 1){
+
+        if(urutan == 1) {
+            sortIdAsc();
+        }
+        else if(urutan == 2) {
+            sortIdDesc();
+        }
+        else {
+            throw "Pilihan tidak valid!";
+        }
+    }
+    else if(pilihSort == 2){
+
+        if(urutan == 1) {
+            sortAsc();
+        }
+        else if(urutan == 2) {
+            sortDesc();
+        }
+        else {
+            throw "Pilihan tidak valid!";
+        }
+    }
+    else{
+        throw "Pilihan tidak valid!";
+    }
+
+    tampilPembalap();
+}
                         else if (m == 3) tampilKontrak();
                         else if (m == 4) hapusPembalap();
                         else if (m == 5) hapusKontrak();
