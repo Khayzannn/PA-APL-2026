@@ -438,7 +438,9 @@ void searchData() {
 
     cout << "Cari Nama: ";
     getline(cin, cari);
-
+    if(cari.empty()){
+    throw "Input pencarian kosong!";
+}
     cari = toLower(cari);
 
     bool ketemu = false;
@@ -613,31 +615,74 @@ void menuTeam() {
 
 void menuProfil() {
     int pilih;
+
     do {
         try {
+
             menuProfilUI();
             pilih = inputMenu();
 
             if (pilih == 1) {
+
                 cout << "Username baru: ";
                 getline(cin, users[userAktif].username);
+
                 cout << "Password baru: ";
                 getline(cin, users[userAktif].password);
-            } else if (pilih == 2) {
-                for (int i = userAktif; i < jmlUser - 1; i++) users[i] = users[i + 1];
-                jmlUser--;
-                return;
-            } else if (pilih == 3) {
+
+            }
+            else if (pilih == 2) {
+
+    for (int i = userAktif; i < jmlUser - 1; i++) {
+        users[i] = users[i + 1];
+    }
+
+    jmlUser--;
+
+    userAktif = -1;
+
+    cout << GREEN
+         << "Akun berhasil dihapus!\n"
+         << RESET;
+
+    throw "logout";
+}
+            else if (pilih == 3) {
+                if (userAktif == -1) {
+        break;
+    }
                 header("DATA PROFIL");
-                cout << "Username   : " << users[userAktif].username  << endl;
-                cout << "Fav Driver : " << users[userAktif].favDriver << endl;
-                cout << "Fav Team   : " << users[userAktif].favTeam   << endl;
-            } else if (pilih != 4) {
+
+                cout << "Username   : "
+                     << users[userAktif].username
+                     << endl;
+
+                cout << "Fav Driver : "
+                     << users[userAktif].favDriver
+                     << endl;
+
+                cout << "Fav Team   : "
+                     << users[userAktif].favTeam
+                     << endl;
+            }
+            else if (pilih != 4) {
+
                 throw "Menu salah!";
             }
-        } catch (const char* e) {
-            cout << RED << "Error: " << e << RESET << endl;
+
         }
+       catch (const char* e) {
+
+    if(string(e) == "logout"){
+        throw;
+    }
+
+    cout << RED
+         << "Error: "
+         << e
+         << RESET
+         << endl;
+}
     } while (pilih != 4);
 }
 int inputMenu(){
@@ -771,22 +816,35 @@ int main() {
                             registerUser();
                         } else if (u == 2) {
                             if (loginUser()) {
-                                int m;
-                                do {
-                                    try {
-                                        menuUser();
-                                        m = inputMenu();
+    int m;
+    do {
+        try {
 
-                                        if      (m == 1) menuDriver();
-                                        else if (m == 2) menuTeam();
-                                        else if (m == 3) menuProfil();
-                                        else if (m == 4) break;
-                                        else throw "Menu tidak valid!";
-                                    } catch (const char* e) {
-                                        cout << RED << "Error: " << e << RESET << endl;
-                                    }
-                                } while (true);
-                            }
+            menuUser();
+            m = inputMenu();
+
+            if      (m == 1) menuDriver();
+            else if (m == 2) menuTeam();
+            else if (m == 3) menuProfil();
+            else if (m == 4) break;
+            else throw "Menu tidak valid!";
+
+        } 
+        catch (const char* e) {
+
+            if (string(e) == "logout") {
+                break;
+            }
+
+            cout << RED
+                 << "Error: "
+                 << e
+                 << RESET
+                 << endl;
+        }
+
+    } while (true);
+}
                         } else if (u == 3) {
                             break;
                         } else {
