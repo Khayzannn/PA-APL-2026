@@ -86,22 +86,27 @@ void menuAdmin() {
     cout << "1. Tambah Pembalap\n";
     cout << "2. Lihat Pembalap\n";
     cout << "3. Lihat Kontrak\n";
-    cout << "4. Hapus Pembalap\n";
-    cout << "5. Hapus Kontrak\n";
-    cout << "6. Tambah Kontrak\n";
-    cout << "7. Edit Kontrak\n";
-    cout << "8. Search Data\n";
-    cout << "9. Keluar\n";
+    cout << "4. Edit Pembalap\n";
+    cout << "5. Hapus Pembalap\n";
+    cout << "6. Hapus Kontrak\n";
+    cout << "7. Tambah Kontrak\n";
+    cout << "8. Edit Kontrak\n";
+    cout << "9. Search Data\n";
+    cout << "10. Keluar\n";
     garis();
     cout << "Pilih: ";
 }
 
 void menuUser() {
+
     header("MENU USER");
+
     cout << "1. Menu Driver\n";
     cout << "2. Menu Team\n";
-    cout << "3. Menu Profil\n";
-    cout << "4. Keluar\n";
+    cout << "3. Lihat Favorit\n";
+    cout << "4. Menu Profil\n";
+    cout << "5. Keluar\n";
+
     garis();
     cout << "Pilih: ";
 }
@@ -216,7 +221,57 @@ void tambahPembalap() {
         cout << RED << "Error: " << e << RESET << endl;
     }
 }
+void editPembalap() {
 
+    try {
+
+        if (jmlP == 0)
+            throw "Data pembalap kosong!";
+
+        header("EDIT PEMBALAP");
+
+        int id;
+        cout << "ID Pembalap: ";
+        validasiAngka(id);
+
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+        for (int i = 0; i < jmlP; i++) {
+
+            if (p[i].id == id) {
+
+                cout << "Nama baru: ";
+                getline(cin, p[i].nama);
+
+                if (p[i].nama.empty())
+                    throw "Nama tidak boleh kosong!";
+
+                cout << "Team baru: ";
+                getline(cin, p[i].tim);
+
+                if (p[i].tim.empty())
+                    throw "Team tidak boleh kosong!";
+
+                cout << GREEN
+                     << "Data berhasil diupdate!\n"
+                     << RESET;
+
+                return;
+            }
+        }
+
+        throw "ID pembalap tidak ditemukan!";
+
+    }
+    catch (const char* e) {
+
+        cout << RED
+             << "Error: "
+             << e
+             << RESET
+             << endl;
+    }
+}
 void tampilPembalap() {
     header("DATA PEMBALAP");
 
@@ -429,33 +484,87 @@ void searchData() {
 
     header("SEARCH DATA");
 
-    if (jmlP == 0) {
-        cout << RED << "Data pembalap masih kosong\n" << RESET;
-        return;
-    }
+    cout << "1. Search Pembalap\n";
+    cout << "2. Search Kontrak\n";
+
+    garis();
+    cout << "Pilih: ";
+
+    int pilih = inputMenu();
 
     string cari;
 
-    cout << "Cari Nama: ";
+    cout << "Cari: ";
     getline(cin, cari);
-    if(cari.empty()){
-    throw "Input pencarian kosong!";
-}
+
+    if (cari.empty()) {
+
+        cout << RED
+             << "Input pencarian kosong!"
+             << RESET
+             << endl;
+
+        return;
+    }
+
     cari = toLower(cari);
 
     bool ketemu = false;
 
-    for (int i = 0; i < jmlP; i++) {
+    if (pilih == 1) {
 
-        string nama = toLower(p[i].nama);
+        for (int i = 0; i < jmlP; i++) {
 
-        if (nama.find(cari) != string::npos) {
+            string nama = toLower(p[i].nama);
+
+            if (nama.find(cari) != string::npos) {
+
+                cout << GREEN
+                     << "Ditemukan: "
+                     << p[i].nama
+                     << " - "
+                     << p[i].tim
+                     << RESET
+                     << endl;
+
+                ketemu = true;
+            }
+        }
+
+        if (!ketemu) {
+
+            cout << RED
+                 << "Pembalap tidak ditemukan\n"
+                 << RESET;
+        }
+    }
+
+else if (pilih == 2) {
+
+    for (int i = 0; i < jmlK; i++) {
+
+        string idKontrak = toLower(to_string(k[i].idKontrak));
+        string tahun = toLower(to_string(k[i].tahun));
+
+        string namaDriver = "";
+
+        for (int j = 0; j < jmlP; j++) {
+
+            if (k[i].idPembalap == p[j].id) {
+
+                namaDriver = toLower(p[j].nama);
+                break;
+            }
+        }
+
+        if (idKontrak.find(cari) != string::npos ||
+            tahun.find(cari) != string::npos ||
+            namaDriver.find(cari) != string::npos) {
 
             cout << GREEN
-                 << "Ditemukan: "
-                 << p[i].nama
-                 << " - "
-                 << p[i].tim
+                 << "ID Kontrak : " << k[i].idKontrak
+                 << " | Pembalap : " << namaDriver
+                 << " | Tahun : " << k[i].tahun
                  << RESET
                  << endl;
 
@@ -464,8 +573,12 @@ void searchData() {
     }
 
     if (!ketemu) {
-        cout << RED << "Data tidak ditemukan\n" << RESET;
+
+        cout << RED
+             << "Kontrak tidak ditemukan\n"
+             << RESET;
     }
+}
 }
 
 void registerUser() {
@@ -555,9 +668,17 @@ void menuDriver() {
             if (pilih == 1) {
                 tampilPembalap();
             } else if (pilih == 2) {
-                if (jmlP == 0) throw "Data pembalap kosong!";              
-                cout << "Driver favorit: ";
-                getline(cin, users[userAktif].favDriver);
+                  if (jmlP == 0)
+        throw "Data pembalap kosong!";
+
+    tampilPembalap();
+
+    cout << "\nMasukkan nama driver favorit: ";
+    getline(cin, users[userAktif].favDriver);
+
+    cout << GREEN
+         << "Driver favorit berhasil ditambahkan!\n"
+         << RESET;
             } else if (pilih == 3) {              
                 cout << "Edit driver favorit: ";
                 getline(cin, users[userAktif].favDriver);
@@ -571,7 +692,32 @@ void menuDriver() {
         }
     } while (pilih != 5);
 }
+void lihatFavorit() {
 
+    header("DATA FAVORIT");
+
+    cout << "Driver Favorit : ";
+
+    if (users[userAktif].favDriver.empty()) {
+        cout << "-";
+    }
+    else {
+        cout << users[userAktif].favDriver;
+    }
+
+    cout << endl;
+
+    cout << "Team Favorit   : ";
+
+    if (users[userAktif].favTeam.empty()) {
+        cout << "-";
+    }
+    else {
+        cout << users[userAktif].favTeam;
+    }
+
+    cout << endl;
+}
 void menuTeam() {
     int pilih;
     do {
@@ -596,9 +742,35 @@ void menuTeam() {
                     }
                 }
             } else if (pilih == 2) {
-                if (jmlP == 0) throw "Data team kosong!";
-                cout << "Team favorit: ";
-                getline(cin, users[userAktif].favTeam);
+                  if (jmlP == 0)
+        throw "Data team kosong!";
+
+    header("DATA TEAM");
+
+    for (int i = 0; i < jmlP; i++) {
+
+        bool sudahAda = false;
+
+        for (int j = 0; j < i; j++) {
+
+            if (p[i].tim == p[j].tim) {
+
+                sudahAda = true;
+                break;
+            }
+        }
+
+        if (!sudahAda) {
+            cout << "- " << p[i].tim << endl;
+        }
+    }
+
+    cout << "\nMasukkan team favorit: ";
+    getline(cin, users[userAktif].favTeam);
+
+    cout << GREEN
+         << "Team favorit berhasil ditambahkan!\n"
+         << RESET;
             } else if (pilih == 3) {
                 cout << "Edit team favorit: ";
                 getline(cin, users[userAktif].favTeam);
@@ -793,12 +965,13 @@ int main() {
     tampilPembalap();
 }
                         else if (m == 3) tampilKontrak();
-                        else if (m == 4) hapusPembalap();
-                        else if (m == 5) hapusKontrak();
-                        else if (m == 6) tambahKontrak();
-                        else if (m == 7) editKontrak();
-                        else if (m == 8) searchData();
-                        else if (m == 9) break;
+                        else if (m == 4) editPembalap();
+                        else if (m == 5) hapusPembalap();
+                        else if (m == 6) hapusKontrak();
+                        else if (m == 7) tambahKontrak();
+                        else if (m == 8) editKontrak();
+                        else if (m == 9) searchData();
+                        else if (m == 10) break;
                         else throw "Menu tidak tersedia!";
                     } catch (const char* e) {
                         cout << RED << "Error: " << e << RESET << endl;
@@ -825,8 +998,9 @@ int main() {
 
             if      (m == 1) menuDriver();
             else if (m == 2) menuTeam();
-            else if (m == 3) menuProfil();
-            else if (m == 4) break;
+            else if (m == 3) lihatFavorit();
+            else if (m == 4) menuProfil();
+            else if (m == 5) break;
             else throw "Menu tidak valid!";
 
         } 
