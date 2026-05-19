@@ -3,7 +3,6 @@
 #include <iomanip>
 #include <algorithm>
 #include <limits>
-#include <cstdlib>
 using namespace std;
 
 #define RESET   "\033[0m"
@@ -45,15 +44,7 @@ int inputMenu();
 void garis() {
     cout << CYAN << "=================================================\n" << RESET;
 }
-void clearScreen() {
 
-#ifdef _WIN32
-    system("cls");
-#else
-    system("clear");
-#endif
-
-}
 void header(string judul) {
     garis();
     cout << YELLOW << "   " << judul << RESET << endl;
@@ -68,9 +59,7 @@ void validasiAngka(int &x) {
     }
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
 }
-
 void menuLogin() {
-    clearScreen();
     header("MENU LOGIN");
     cout << "1. Login Admin\n";
     cout << "2. Login User\n";
@@ -80,7 +69,6 @@ void menuLogin() {
 }
 
 void menuUserLogin() {
-    clearScreen();
     header("USER ACCESS");
     cout << "1. Register\n";
     cout << "2. Login\n";
@@ -94,7 +82,6 @@ void inputLogin(string role) {
 }
 
 void menuAdmin() {
-    clearScreen();
     header("MENU ADMIN");
     cout << "1. Tambah Pembalap\n";
     cout << "2. Lihat Pembalap\n";
@@ -246,7 +233,6 @@ void editPembalap() {
         cout << "ID Pembalap: ";
         validasiAngka(id);
 
-        // cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
         for (int i = 0; i < jmlP; i++) {
 
@@ -947,28 +933,35 @@ void menuProfil() {
 
             if (pilih == 1) {
 
+             header("EDIT USERNAME/PASSWORD");
+                
                 cout << "Username baru: ";
                 getline(cin, users[userAktif].username);
 
                 cout << "Password baru: ";
                 getline(cin, users[userAktif].password);
 
+                cout << GREEN << "\nData berhasil diperbarui!" << RESET << endl;
+                cout << "Tekan Enter untuk melanjutkan...";
+                cin.get();
             }
             else if (pilih == 2) {
 
-    for (int i = userAktif; i < jmlUser - 1; i++) {
-        users[i] = users[i + 1];
-    }
-
-    jmlUser--;
-
-    userAktif = -1;
-
-    cout << GREEN
-         << "Akun berhasil dihapus!\n"
-         << RESET;
-
-    throw "logout";
+                cout << RED << "Yakin ingin menghapus akun? (y/n): " << RESET;
+                string konfirmasi;
+                getline(cin, konfirmasi);
+                
+                if (toLower(konfirmasi) == "y") {
+                    for (int i = userAktif; i < jmlUser - 1; i++) {
+                        users[i] = users[i + 1];
+                    }
+                    jmlUser--;
+                    userAktif = -1;
+                    cout << GREEN << "Akun berhasil dihapus!" << RESET << endl;
+                    throw "logout"; // Keluar ke menu utama
+                } else {
+                    cout << YELLOW << "Penghapusan dibatalkan." << RESET << endl;
+                }
 }
             else if (pilih == 3) {
                 if (userAktif == -1) {
