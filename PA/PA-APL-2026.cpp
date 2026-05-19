@@ -3,6 +3,7 @@
 #include <iomanip>
 #include <algorithm>
 #include <limits>
+#include <cstdlib>
 using namespace std;
 
 #define RESET   "\033[0m"
@@ -44,7 +45,15 @@ int inputMenu();
 void garis() {
     cout << CYAN << "=================================================\n" << RESET;
 }
+void clearScreen() {
 
+#ifdef _WIN32
+    system("cls");
+#else
+    system("clear");
+#endif
+
+}
 void header(string judul) {
     garis();
     cout << YELLOW << "   " << judul << RESET << endl;
@@ -61,6 +70,7 @@ void validasiAngka(int &x) {
 }
 
 void menuLogin() {
+    clearScreen();
     header("MENU LOGIN");
     cout << "1. Login Admin\n";
     cout << "2. Login User\n";
@@ -70,6 +80,7 @@ void menuLogin() {
 }
 
 void menuUserLogin() {
+    clearScreen();
     header("USER ACCESS");
     cout << "1. Register\n";
     cout << "2. Login\n";
@@ -83,6 +94,7 @@ void inputLogin(string role) {
 }
 
 void menuAdmin() {
+    clearScreen();
     header("MENU ADMIN");
     cout << "1. Tambah Pembalap\n";
     cout << "2. Lihat Pembalap\n";
@@ -206,7 +218,6 @@ void tambahPembalap() {
         }
 
         p[jmlP].id = idBaru;
-        // cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
         cout << "Nama: ";
         getline(cin, p[jmlP].nama);
@@ -235,7 +246,7 @@ void editPembalap() {
         cout << "ID Pembalap: ";
         validasiAngka(id);
 
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        // cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
         for (int i = 0; i < jmlP; i++) {
 
@@ -702,8 +713,41 @@ void menuDriver() {
          << RESET;
 
             } else if (pilih == 3) {              
-                cout << "Edit driver favorit: ";
-                getline(cin, users[userAktif].favDriver);
+                  if (users[userAktif].favDriver.empty()) {
+
+        throw "Belum ada driver favorit!";
+    }
+
+    string driverInput;
+    bool valid = false;
+
+    header("EDIT DRIVER FAVORIT");
+
+    cout << "Driver favorit saat ini : "
+         << users[userAktif].favDriver
+         << endl;
+
+    cout << "\nMasukkan driver favorit baru: ";
+    getline(cin, driverInput);
+
+    for (int i = 0; i < jmlP; i++) {
+
+        if (toLower(driverInput) == toLower(p[i].nama)) {
+
+            users[userAktif].favDriver = p[i].nama;
+            valid = true;
+            break;
+        }
+    }
+
+    if (!valid) {
+
+        throw "Driver tidak ditemukan!";
+    }
+
+    cout << GREEN
+         << "Driver favorit berhasil diubah!\n"
+         << RESET;
             } else if (pilih == 4) {
                  if (users[userAktif].favDriver.empty()) {
 
@@ -822,8 +866,56 @@ void menuTeam() {
          << RESET;
 
             } else if (pilih == 3) {
-                cout << "Edit team favorit: ";
-                getline(cin, users[userAktif].favTeam);
+                 if (users[userAktif].favTeam.empty()) {
+
+        throw "Belum ada team favorit!";
+    }
+
+    string teamInput;
+    bool valid = false;
+
+    header("DATA TEAM");
+
+    for (int i = 0; i < jmlP; i++) {
+
+        bool sudahAda = false;
+
+        for (int j = 0; j < i; j++) {
+
+            if (p[i].tim == p[j].tim) {
+
+                sudahAda = true;
+                break;
+            }
+        }
+
+        if (!sudahAda) {
+
+            cout << "- " << p[i].tim << endl;
+        }
+    }
+
+    cout << "\nEdit team favorit: ";
+    getline(cin, teamInput);
+
+    for (int i = 0; i < jmlP; i++) {
+
+        if (toLower(teamInput) == toLower(p[i].tim)) {
+
+            users[userAktif].favTeam = p[i].tim;
+            valid = true;
+            break;
+        }
+    }
+
+    if (!valid) {
+
+        throw "Team tidak ditemukan!";
+    }
+
+    cout << GREEN
+         << "Team favorit berhasil diubah!\n"
+         << RESET;
             } else if (pilih == 4) {
                   if (users[userAktif].favTeam.empty()) {
 
