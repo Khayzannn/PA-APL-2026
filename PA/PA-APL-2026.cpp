@@ -206,7 +206,7 @@ void tambahPembalap() {
         }
 
         p[jmlP].id = idBaru;
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        // cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
         cout << "Nama: ";
         getline(cin, p[jmlP].nama);
