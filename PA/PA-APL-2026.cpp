@@ -57,6 +57,7 @@ void validasiAngka(int &x) {
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
         throw "Input harus angka!";
     }
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
 }
 
 void menuLogin() {
@@ -474,12 +475,14 @@ void editKontrak() {
         cout << RED << "Error: " << e << RESET << endl;
     }
 }
+
 string toLower(string teks){
 
     transform(teks.begin(), teks.end(), teks.begin(), ::tolower);
 
     return teks;
 }
+
 void searchData() {
 
     header("SEARCH DATA");
@@ -673,17 +676,45 @@ void menuDriver() {
 
     tampilPembalap();
 
+    string driverInput;
+    bool valid = false;
+
     cout << "\nMasukkan nama driver favorit: ";
-    getline(cin, users[userAktif].favDriver);
+    getline(cin, driverInput);
+
+    for (int i = 0; i < jmlP; i++) {
+
+        if (toLower(driverInput) == toLower(p[i].nama)) {
+
+            valid = true;
+            users[userAktif].favDriver = p[i].nama;
+            break;
+        }
+    }
+
+    if (!valid) {
+
+        throw "Driver tidak ditemukan!";
+    }
 
     cout << GREEN
          << "Driver favorit berhasil ditambahkan!\n"
          << RESET;
+
             } else if (pilih == 3) {              
                 cout << "Edit driver favorit: ";
                 getline(cin, users[userAktif].favDriver);
             } else if (pilih == 4) {
-                users[userAktif].favDriver = "";
+                 if (users[userAktif].favDriver.empty()) {
+
+        throw "Belum ada driver favorit!";
+    }
+
+    users[userAktif].favDriver = "";
+
+    cout << GREEN
+         << "Driver favorit berhasil dihapus!\n"
+         << RESET;
             } else if (pilih != 5) {
                 throw "Menu salah!";
             }
@@ -742,7 +773,7 @@ void menuTeam() {
                     }
                 }
             } else if (pilih == 2) {
-                  if (jmlP == 0)
+            if (jmlP == 0)
         throw "Data team kosong!";
 
     header("DATA TEAM");
@@ -765,17 +796,45 @@ void menuTeam() {
         }
     }
 
+    string teamInput;
+    bool valid = false;
+
     cout << "\nMasukkan team favorit: ";
-    getline(cin, users[userAktif].favTeam);
+    getline(cin, teamInput);
+
+    for (int i = 0; i < jmlP; i++) {
+
+        if (toLower(teamInput) == toLower(p[i].tim)) {
+
+            valid = true;
+            users[userAktif].favTeam = p[i].tim;
+            break;
+        }
+    }
+
+    if (!valid) {
+
+        throw "Team tidak ditemukan!";
+    }
 
     cout << GREEN
          << "Team favorit berhasil ditambahkan!\n"
          << RESET;
+
             } else if (pilih == 3) {
                 cout << "Edit team favorit: ";
                 getline(cin, users[userAktif].favTeam);
             } else if (pilih == 4) {
-                users[userAktif].favTeam = "";
+                  if (users[userAktif].favTeam.empty()) {
+
+        throw "Belum ada team favorit!";
+    }
+
+    users[userAktif].favTeam = "";
+
+    cout << GREEN
+         << "Team favorit berhasil dihapus!\n"
+         << RESET;
             } else if (pilih != 5) {
                 throw "Menu salah!";
             }
@@ -857,6 +916,7 @@ void menuProfil() {
 }
     } while (pilih != 4);
 }
+
 int inputMenu(){
 
     string input;
@@ -873,7 +933,6 @@ int inputMenu(){
         
     }
     
-
     return stoi(input);
 }
 
